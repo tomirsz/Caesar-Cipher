@@ -11,7 +11,7 @@
             <p>Tekst do przetworzenia</p>
             <textarea placeholder="Wpisz tekst..." type="text" name="text" rows="10"></textarea>
             <p>Przesunięcie</p>
-            <input value=0 type="number" name="shift" min=0 max=26>
+            <input value=0 type="number" name="shift">
             <button class="cipher-button" type="" name="submit">Prześlij</button>
             <?php
     if(isset($_POST['submit'])) {
@@ -30,45 +30,64 @@
         $shiftNumber =  $_POST['shift'];
 
         echo "Tekst wyjściowy: <br>";
+        if($shiftNumber > 26 || $shiftNumber < -26) {
+            $shiftNumber = $shiftNumber % 26;
+        }
         for($i = 0; $i < strlen($textToChange); $i++) {
             $letter = ord($textToChange[$i]);
-            if ($letter == $SPACEBAR_CODE || $letter == $DOT_CODE || $letter == $COMMA_CODE) {
+            if ($letter == $SPACEBAR_CODE || $letter == $DOT_CODE || $letter == $COMMA_CODE || $shiftNumber == 0) {
                 echo chr($letter);
             } else {
                 if ($letter < 91) {
-                $sum = $letter + $shiftNumber;
-                $difference = $GREAT_LETTER_MAX_NUMBER - $sum;
-                if($difference > 0) {
-                    $letterToPrint = chr($letter + $shiftNumber);
-                    echo $letterToPrint;
-                } else {
-                    if($difference == 0) {
-                        $letterToPrint = chr($letter);
-                        echo $letterToPrint;
+                    if($shiftNumber > 0) {
+                        printLetter($letter, $shiftNumber, $GREAT_LETTER_MIN_NUMBER, $GREAT_LETTER_MAX_NUMBER);
                     } else {
-                        $letterToPrint = chr($GREAT_LETTER_MIN_NUMBER - ($difference + 1));
-                        echo $letterToPrint;
+                        printLetterInNegativeCase($letter, $shiftNumber, $GREAT_LETTER_MIN_NUMBER, $GREAT_LETTER_MAX_NUMBER);
                     }
-                }
-            } else {
-                $sum = $letter + $shiftNumber;
-                $difference = $SMALL_LETTER_MAX_NUMBER - $sum;
-                if($difference > 0) {
-                    $letterToPrint = chr($letter + $shiftNumber);
-                    echo $letterToPrint;
                 } else {
-                    if($difference == 0) {
-                        $letterToPrint = chr($letter);
-                        echo $letterToPrint;
+                    if($shiftNumber > 0) {
+                        printLetter($letter, $shiftNumber, $SMALL_LETTER_MIN_NUMBER, $SMALL_LETTER_MAX_NUMBER);
                     } else {
-                        $letterToPrint = chr($SMALL_LETTER_MIN_NUMBER - ($difference + 1));
-                        echo $letterToPrint;
+                    printLetterInNegativeCase($letter, $shiftNumber, $SMALL_LETTER_MIN_NUMBER, $SMALL_LETTER_MAX_NUMBER);
                     }
-                }
-            }  
-        }   
+                }  
+            }   
+        }
     }
-}
+
+    function printLetter($letter, $shiftNumber, $min_number, $max_number) {
+        $sum = $letter + $shiftNumber;
+        $difference = $max_number - $sum;
+        if($difference > 0) {
+            $letterToPrint = chr($letter + $shiftNumber);
+            echo $letterToPrint;
+        } else {
+            if($difference == 0) {
+                $letterToPrint = chr($max_number);
+                echo $letterToPrint;
+            } else {
+                $letterToPrint = chr($min_number - ($difference + 1));
+                echo $letterToPrint;
+            }
+        }
+    }
+
+    function printLetterInNegativeCase($letter, $shiftNumber, $min_number, $max_number) {
+        $sum = $letter + $shiftNumber;
+        $difference = $min_number - $sum;
+        if($difference < 0) {
+            $letterToPrint = chr($letter + $shiftNumber);
+            echo $letterToPrint;
+        } else {
+            if($difference == 0) {
+                $letterToPrint = chr($min_number);
+                echo $letterToPrint;
+            } else {
+                $letterToPrint = chr($max_number - ($difference - 1));
+                echo $letterToPrint;
+            }
+        }
+    }
     
 ?>
         </form>
